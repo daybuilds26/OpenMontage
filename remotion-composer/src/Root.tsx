@@ -124,12 +124,17 @@ const calculateMetadata: CalculateMetadataFunction<ExplainerProps> = async ({
   props,
 }) => {
   const cuts = props.cuts || [];
+  // Allow vertical / custom canvas sizes (e.g. 1080x1920 for Shorts/小红书)
+  // to be driven from props without registering a separate composition.
+  const dims = props as { width?: number; height?: number };
+  const width = dims.width || 1920;
+  const height = dims.height || 1080;
   if (cuts.length === 0) {
-    return { durationInFrames: 30 * 60 };
+    return { durationInFrames: 30 * 60, width, height };
   }
   const lastEnd = Math.max(...cuts.map((c) => c.out_seconds || 0));
   // Add 1 second padding for final fade
-  return { durationInFrames: Math.ceil((lastEnd + 1) * 30) };
+  return { durationInFrames: Math.ceil((lastEnd + 1) * 30), width, height };
 };
 
 export const Root: React.FC = () => {

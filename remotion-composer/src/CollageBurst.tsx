@@ -13,14 +13,23 @@ import {
 import React from "react";
 import { loadFont as loadPlayfair } from "@remotion/google-fonts/PlayfairDisplay";
 
-const { fontFamily: playfairFamily } = loadPlayfair("normal", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
-});
-const { fontFamily: playfairItalic } = loadPlayfair("italic", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
-});
+// REMOTION_LOCAL_FONTS=1 skips the Google Fonts fetch for offline/air-gapped
+// or CJK renders (fonts.gstatic.com unreachable). See Explainer.tsx.
+const LOCAL_SERIF = "'Noto Serif CJK SC', 'Playfair Display', Georgia, serif";
+const playfairFamily =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? LOCAL_SERIF
+    : loadPlayfair("normal", {
+        weights: ["400", "700"],
+        subsets: ["latin"],
+      }).fontFamily;
+const playfairItalic =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? LOCAL_SERIF
+    : loadPlayfair("italic", {
+        weights: ["400", "700"],
+        subsets: ["latin"],
+      }).fontFamily;
 
 function resolveAsset(src: string): string {
   if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("data:")) return src;

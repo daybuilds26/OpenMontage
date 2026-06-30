@@ -14,10 +14,15 @@ import { loadFont } from "@remotion/google-fonts/PlayfairDisplay";
 
 // Editorial serif for the tagline — Playfair Display at its boldest weight.
 // Loaded once at module scope so every render reuses the same font face.
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700", "900"],
-  subsets: ["latin"],
-});
+// REMOTION_LOCAL_FONTS=1 skips the Google Fonts fetch for offline/air-gapped
+// or CJK renders (fonts.gstatic.com unreachable). See Explainer.tsx.
+const fontFamily =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? "'Noto Serif CJK SC', 'Playfair Display', Georgia, serif"
+    : loadFont("normal", {
+        weights: ["400", "700", "900"],
+        subsets: ["latin"],
+      }).fontFamily;
 
 export interface TitledVideoProps {
   videoSrc: string;

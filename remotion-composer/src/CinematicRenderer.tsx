@@ -28,10 +28,15 @@ import { CaptionOverlay } from "./components/CaptionOverlay";
 
 const FPS = 30;
 
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "500", "700"],
-  subsets: ["latin"],
-});
+// REMOTION_LOCAL_FONTS=1 skips the Google Fonts fetch for offline/air-gapped
+// or CJK renders (fonts.gstatic.com unreachable). See Explainer.tsx.
+const fontFamily =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'Space Grotesk', system-ui, sans-serif"
+    : loadFont("normal", {
+        weights: ["400", "500", "700"],
+        subsets: ["latin"],
+      }).fontFamily;
 
 const toneGradient = (tone: CinematicTone) => {
   switch (tone) {

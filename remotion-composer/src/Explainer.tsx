@@ -49,11 +49,21 @@ import { ProviderChip } from "./components/ProviderChip";
 import type { ParticleType } from "./components/ParticleOverlay";
 import { resolveTheme, type ThemeConfig, DEFAULT_THEME } from "./Root";
 
-// Load Space Grotesk font for cinematic typography
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
-});
+// Load Space Grotesk font for cinematic typography.
+// REMOTION_LOCAL_FONTS=1 skips the Google Fonts network fetch and relies on
+// locally-installed fonts instead (e.g. Noto Sans CJK for Chinese, or any
+// offline/air-gapped render where fonts.gstatic.com is unreachable). Per-glyph
+// fallback in the browser still routes CJK characters to the local CJK font
+// even inside Latin-named font stacks.
+const LOCAL_FONT_STACK =
+  "'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'Space Grotesk', 'Inter', system-ui, sans-serif";
+const fontFamily =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? LOCAL_FONT_STACK
+    : loadFont("normal", {
+        weights: ["400", "700"],
+        subsets: ["latin"],
+      }).fontFamily;
 
 // ---------------------------------------------------------------------------
 // Animated Background — Gradient Mesh + Floating Orbs

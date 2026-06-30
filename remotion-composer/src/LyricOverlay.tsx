@@ -10,10 +10,15 @@ import {
 import React from "react";
 import { loadFont as loadPlayfair } from "@remotion/google-fonts/PlayfairDisplay";
 
-const { fontFamily: playfairItalic } = loadPlayfair("italic", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
-});
+// REMOTION_LOCAL_FONTS=1 skips the Google Fonts fetch for offline/air-gapped
+// or CJK renders (fonts.gstatic.com unreachable). See Explainer.tsx.
+const playfairItalic =
+  process.env.REMOTION_LOCAL_FONTS === "1"
+    ? "'Noto Serif CJK SC', 'Playfair Display', Georgia, serif"
+    : loadPlayfair("italic", {
+        weights: ["400", "700"],
+        subsets: ["latin"],
+      }).fontFamily;
 
 function resolveAsset(src: string): string {
   if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("data:")) return src;
