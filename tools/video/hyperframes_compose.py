@@ -1135,6 +1135,15 @@ class HyperFramesCompose(BaseTool):
             resolved = shutil.which(cmd[0])
             if resolved:
                 cmd[0] = resolved
+        # `hyperframes` pulls in `onnxruntime-node`, whose postinstall tries to
+        # download optional CUDA EP binaries from a Nuget feed. The CPU binary
+        # already ships in the npm tarball, so that download is unnecessary —
+        # but when it fails (offline, restricted egress, or a flaky CDN) the
+        # whole install aborts and `npx hyperframes` becomes a CLI that crashes
+        # silently on startup. Skipping the CUDA fetch keeps the install (and
+        # thus every render) working without it. Honour an explicit user value.
+        env = dict(os.environ)
+        env.setdefault("ONNXRUNTIME_NODE_INSTALL", "skip")
         try:
             return subprocess.run(
                 cmd,
@@ -1143,6 +1152,7 @@ class HyperFramesCompose(BaseTool):
                 timeout=timeout,
                 cwd=str(cwd) if cwd else None,
                 check=False,
+                env=env,
             )
         except subprocess.TimeoutExpired as e:
             # Surface timeouts as a failed CompletedProcess so callers get a
